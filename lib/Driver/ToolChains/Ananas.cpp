@@ -134,6 +134,23 @@ Ananas::Ananas(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
   getFilePaths().push_back(getDriver().SysRoot + "/usr/lib");
 }
 
+void Ananas::addLibCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
+                                     llvm::opt::ArgStringList &CC1Args) const {
+
+  StringRef SysRoot = getDriver().SysRoot;
+
+  SmallString<128> Dir(SysRoot);
+  llvm::sys::path::append(Dir, "usr", "include", "c++", "v1");
+  addSystemInclude(DriverArgs, CC1Args, Dir.str());
+}
+
+void Ananas::AddCXXStdlibLibArgs(const ArgList &Args,
+                                   ArgStringList &CmdArgs) const {
+  CmdArgs.push_back("-lc++");
+  CmdArgs.push_back("-lc++abi");
+  CmdArgs.push_back("-lunwind");
+}
+
 Tool *Ananas::buildAssembler() const {
   return new tools::ananas::Assembler(*this);
 }
